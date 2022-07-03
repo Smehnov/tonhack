@@ -39,7 +39,8 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/composition-api/module'
+    '@nuxtjs/composition-api/module',
+    '@pinia/nuxt'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -56,5 +57,27 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend (config, { isDev, isClient }) {
+      // https://go.nuxtjs.dev/transpile
+      config.module.rules.push({
+        test: /\.js$/,
+        loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+        exclude: /\.vue$/
+      })
+
+      config.module.rules.push(
+        {
+          test: /\.m?js$/,
+          include: /node_modules[/\\|]tonweb/i,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-class-properties']
+            }
+          }
+        }
+      )
+    }
   }
 }
